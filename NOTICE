@@ -1,0 +1,26 @@
+DeepSeek-V4.1-Flash-2x-DGX-Spark
+Copyright 2026 lucataco
+
+This repository is licensed under the Apache License, Version 2.0 (see LICENSE).
+
+It contains, uses or downloads the following third-party work:
+
+eval/quality_eval.py
+  Modified copy of tools/dsv41/quality_eval.py from bertholomus/TensorFold (branch deepseek-v41-tp2, commit 8e0966e),
+  Apache License 2.0. Changes (also listed in the file's docstring): --key-env, --provider (OpenRouter reasoning field
+  and provider pinning), and extra per-row fields (provider, reasoning length, reply tail).
+  https://github.com/bertholomus/TensorFold
+
+Downloaded at run time, not included:
+  - TensorFold engine (docker/Dockerfile) and tools/dsv41/kit_bench.py (bench/run-bench.sh), bertholomus/TensorFold @
+    8e0966e, Apache License 2.0; built on ashhart/TensorFold, Apache License 2.0.
+  - NVIDIA PyTorch container nvcr.io/nvidia/pytorch:26.07-py3, under NVIDIA's container license terms.
+  - DeepSeek-V4.1-Flash chat template (scripts/install-chat-template.sh, which removes three image-placeholder guard
+    lines from it at install time) and the DeepSeek-V4.1-Flash-1017 Engram shards,
+    encoder test files and tokenizer config (scripts/download-weights.sh, tests/check_chat_template.py),
+    Copyright (c) 2023 DeepSeek, MIT License.
+  - LibertAIDAI/DeepSeek-V4.1-Flash-1017-EXL3-2.9bpw (scripts/download-weights.sh), MIT License.
+  - MMLU (cais/mmlu, MIT) and GSM8K (openai/gsm8k, MIT) test splits (eval/prepare-data.py).
+
+results/eval/*.json contain model outputs (reply tails) from the local server and from DeepSeek-V4.1-Flash-1017 served
+by DeepSeek and DeepInfra through OpenRouter.

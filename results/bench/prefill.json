@@ -1,0 +1,29 @@
+{
+ "cmd": "prefill",
+ "base": "http://127.0.0.1:8888",
+ "model": "deepseek-v4.1-flash",
+ "unix": 1792256038.731482,
+ "result": [
+  {
+   "length": 8192,
+   "rep": 0,
+   "prompt_tokens": 8192,
+   "ttft_s": 4.9770618919997105,
+   "prefill_tps": 1645.951000361897
+  },
+  {
+   "length": 32768,
+   "rep": 0,
+   "prompt_tokens": 32768,
+   "ttft_s": 24.42982785299955,
+   "prefill_tps": 1341.311129868509
+  },
+  {
+   "length": 131072,
+   "rep": 0,
+   "prompt_tokens": 131072,
+   "ttft_s": 99.35246055300013,
+   "prefill_tps": 1319.2627466944205
+  }
+ ]
+}

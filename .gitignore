@@ -1,0 +1,25 @@
+# local settings and secrets
+.env
+*.key
+*.token
+secrets/
+
+# weights, caches, downloaded data (never committed)
+*.safetensors
+*.gguf
+*.parquet
+eval/data/
+bench/kit_bench.py
+.cache/
+
+# run output (results/ holds the curated runs; new runs land in dated subfolders until reviewed)
+*.log
+results/**/run-*/
+
+# Python / editors / OS
+__pycache__/
+*.pyc
+.venv/
+.idea/
+.vscode/
+.DS_Store
