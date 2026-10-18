@@ -13,11 +13,24 @@ reproduce them. It contains no weights.
 |---|---|
 | Decode, 4 streams, aggregate | 118 tok/s |
 | Decode after a 128K-token prompt | 71 tok/s |
-| Prefill (8K / 32K / 128K) | ~1,650–2,000 / ~1,300 / ~1,300 tok/s |
+| Decode after a 200K-token prompt (256 tok, thinking off) | 42.8 tok/s |
+| Prefill (8K / 32K / 128K / 200K) | ~1,650–2,000 / ~1,300 / ~1,300 / 1,208 tok/s |
 | Quality vs DeepSeek's own API (seeded MMLU + GSM8K, thinking off and on) | same within noise; same answer on 96–98% of questions |
 
 Full numbers, versions and method: [results/RESULTS.md](results/RESULTS.md). How we got here, including what did not
 work: [docs/JOURNEY.md](docs/JOURNEY.md).
+
+Against DeepSeek's first-party API (`deepseek-flash`), 100-item tinyBenchmarks subsets, same prompt,
+temperature 0, matched `reasoning_effort`, scored per item:
+
+| reasoning_effort | task | local (EXL3 2.9 bpw) | DeepSeek API | Δ |
+|---|---|---:|---:|---:|
+| high | GSM8K | 97.0% | 97.0% | 0.0 pt |
+| high | MMLU | 90.0% | 90.0% | 0.0 pt |
+| none | GSM8K | 98.0% | 97.0% | +1.0 pt |
+| none | MMLU | 88.0% | 88.0% | 0.0 pt |
+
+n = 100 per task; paired McNemar p = 1.0 on every task.
 
 ## What you need
 

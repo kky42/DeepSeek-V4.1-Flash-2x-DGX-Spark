@@ -70,3 +70,37 @@ the same accuracy; the two likely map `high` to different reasoning budgets.
 What this run can and cannot show: with 200 questions a single run moves by about ±3 points, so it rules out large
 regressions, not subtle ones. Both benchmarks are near saturation for this model. IFEval and a tool-calling benchmark
 would be the next, more sensitive tier. OpenRouter cost for both providers: $0.23.
+
+## Direct first-party API comparison (2026-10-18)
+
+The quality run above went through OpenRouter. This one calls DeepSeek's own API (`deepseek-flash`) directly, on the
+100-item [tinyBenchmarks](https://github.com/felipemaiapolo/tinyBenchmarks) subsets (`tinyGSM8K`, `tinyMMLU`), with the
+same prompt, `temperature: 0`, and matched `reasoning_effort`, scored per item.
+
+| effort | task | local | API | Δ | reasoning tokens/item (local / API) |
+|---|---|---:|---:|---:|---:|
+| high | GSM8K | 97.0% | 97.0% | 0.0 pt | 161 / 161 |
+| high | MMLU | 90.0% | 90.0% | 0.0 pt | 240 / 274 |
+| none | GSM8K | 98.0% | 97.0% | +1.0 pt | 0 / 0 |
+| none | MMLU | 88.0% | 88.0% | 0.0 pt | 0 / 0 |
+
+McNemar p = 1.0 on every task. The API advertises `low`/`high`/`max` only; `none` is accepted but undocumented.
+100 items per task resolves about ±3–5 points, so this rules out large regressions, not subtle ones. Script:
+[`eval/api_compare.py`](../eval/api_compare.py); raw outputs and per-item pairing in
+[`eval/api-20261018/`](eval/api-20261018/).
+
+## 200K context
+
+Cold prompt of 199,963 tokens from a unique corpus (never tokenized, so no prefix-cache entry can match it),
+thinking off, 256 output tokens, one stream:
+
+| | cold | same prompt again |
+|---|---:|---:|
+| TTFT | 173.05 s | 3.44 s |
+| prefill | 165.50 s → **1,208 tok/s** | 2.80 s, 1,307 tokens refilled |
+| cached prompt tokens | 0 | 198,656 (97 × 2048 blocks) |
+| decode | **42.8 tok/s** | 42.8 tok/s |
+
+Decode at 200K is 57% of the short-context rate. Method note: `/v1/tokenize` writes into the hot KV window, so a
+cold-prefill measurement must not tokenize the text it later sends — tokenizing first produced a 97-block cache hit
+and a meaningless 153,947 tok/s. Script: [`eval/longctx_200k.py`](../eval/longctx_200k.py).
