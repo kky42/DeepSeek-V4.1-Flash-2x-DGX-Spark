@@ -89,10 +89,11 @@ leaves the defaults alone:
 EXTRA_ENV="-e TF_DS_VISION_MAX_IMAGES=64 -e TF_MAX_BODY_MIB=128"    # in .env
 ```
 
-64 images of 1600x1200 are 78 MB, so the body cap has to rise with the image count. Vision tokens are a pure function
-of each image's own size, independent of how many images the request carries: below `min_pixels` (295,936) an image is
-scaled up and costs 185 tokens, at or above `max_image_tokens` (1,024) it costs 1,002, and 64 of those are 64,141
-prompt tokens. One image is capped at 20 MB. Numbers and script:
+The body cap has to rise with the image count: 64 synthetic 1600x1200 PNGs are 78 MB, photos that size are larger,
+JPEGs smaller. Vision tokens depend only on each image's own size, not on how many images the request carries: a
+32x32 image is scaled up to `min_pixels` (295,936) and costs 185 tokens, a 1600x1200 one is scaled down to the
+`max_image_tokens` (1,024) cap and costs 1,002, and 64 of those are 64,141 prompt tokens. One image is capped at
+20 MB. Numbers and script:
 [results/vision-limits-20261018.md](results/vision-limits-20261018.md).
 
 ## Reproducing the measurements
