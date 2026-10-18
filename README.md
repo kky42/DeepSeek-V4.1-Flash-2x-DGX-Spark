@@ -74,10 +74,26 @@ curl http://HEAD:8888/v1/chat/completions -H 'Content-Type: application/json' -d
 - **Thinking:** `reasoning_effort` = `none` (off), `minimal`, `low`, `medium`, `high` (the default when on), `xhigh`, `max`;
   or `"chat_template_kwargs": {"enable_thinking": false}`. From `low` to `max` the reasoning budget roughly quadruples.
 - **Tools:** the standard OpenAI `tools` field; calls come back as `tool_calls` with `finish_reason: "tool_calls"`.
-- **Images:** OpenAI-style `image_url` content parts.
+- **Images:** OpenAI-style `image_url` content parts; 8 per request and a 32 MiB body by default, both
+  configurable — see [Images](#images).
 - **Pi:** [`clients/pi/models.json`](clients/pi/models.json) is a provider entry for the [Pi](https://pi.dev) coding
   agent, mapping Pi's thinking levels onto the server's (`pi --model deepseek-v4.1-flash:off` etc.).
 - The server is open to your network with no API key; see [TROUBLESHOOTING](docs/TROUBLESHOOTING.md#serving).
+
+### Images
+
+The engine hardcodes 8 images per request and a 32 MiB request body. `docker/patches/` makes both configurable and
+leaves the defaults alone:
+
+```bash
+EXTRA_ENV="-e TF_DS_VISION_MAX_IMAGES=64 -e TF_MAX_BODY_MIB=128"    # in .env
+```
+
+64 images of 1600x1200 are 78 MB, so the body cap has to rise with the image count. Vision tokens are a pure function
+of each image's own size, independent of how many images the request carries: below `min_pixels` (295,936) an image is
+scaled up and costs 185 tokens, at or above `max_image_tokens` (1,024) it costs 1,002, and 64 of those are 64,141
+prompt tokens. One image is capped at 20 MB. Numbers and script:
+[results/vision-limits-20261018.md](results/vision-limits-20261018.md).
 
 ## Reproducing the measurements
 
